@@ -1,0 +1,391 @@
+basePath: /
+definitions:
+  main.UserLoginRequestDto:
+    properties:
+      password:
+        type: string
+      user_name:
+        type: string
+    type: object
+  main.UserLoginResponseDto:
+    properties:
+      token:
+        type: string
+    type: object
+  models.Product:
+    properties:
+      name:
+        type: string
+      serial_number:
+        type: string
+    type: object
+  models.User:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      user_name:
+        type: string
+      user_role:
+        type: string
+    type: object
+  routes.CoinDto:
+    properties:
+      abc:
+        type: string
+      coin_id:
+        type: integer
+      id:
+        type: string
+      large:
+        type: string
+      market_cap_rank:
+        type: integer
+      name:
+        type: string
+      price_btc:
+        type: number
+      score:
+        type: integer
+      slug:
+        type: string
+      small:
+        type: string
+      symbol:
+        type: string
+      thumb:
+        type: string
+    type: object
+  routes.CoinItemDto:
+    properties:
+      item:
+        $ref: '#/definitions/routes.CoinDto'
+    type: object
+  routes.CreateOrderDto:
+    properties:
+      product_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  routes.OrderDto:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      product:
+        $ref: '#/definitions/routes.ProductDto'
+      user:
+        $ref: '#/definitions/routes.UserDto'
+    type: object
+  routes.ProductDto:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      serial_number:
+        type: string
+    type: object
+  routes.TrendingCoinsDto:
+    properties:
+      coins:
+        items:
+          $ref: '#/definitions/routes.CoinItemDto'
+        type: array
+    type: object
+  routes.UpdateUserDto:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+    type: object
+  routes.UserDto:
+    properties:
+      first_name:
+        type: string
+      id:
+        description: this is not the model user, just serializer
+        type: integer
+      last_name:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: fiber@swagger.io
+    name: API Support
+  description: This is a sample swagger for Fiber
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Fiber Example API
+  version: "1.0"
+paths:
+  /api/coin:
+    get:
+      consumes:
+      - application/json
+      description: get list of trending coin
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/routes.TrendingCoinsDto'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: List of trending coins
+      tags:
+      - coins
+  /api/order:
+    get:
+      consumes:
+      - application/json
+      description: get orders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/routes.OrderDto'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: List orders
+      tags:
+      - orders
+    post:
+      consumes:
+      - application/json
+      description: create order
+      parameters:
+      - description: The input order struct
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/routes.CreateOrderDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/routes.OrderDto'
+      summary: Create order
+      tags:
+      - orders
+  /api/product:
+    get:
+      consumes:
+      - application/json
+      description: get products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/routes.ProductDto'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: List products
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: create product
+      parameters:
+      - description: The input product struct
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/routes.ProductDto'
+      summary: Create product
+      tags:
+      - products
+  /api/user:
+    get:
+      consumes:
+      - application/json
+      description: get users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/routes.UserDto'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: List users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: create user
+      parameters:
+      - description: The input user struct
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/routes.UserDto'
+      summary: Create user
+      tags:
+      - users
+  /api/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/routes.UserDto'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: get user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/routes.UserDto'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: update user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: The input user update
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/routes.UpdateUserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/routes.UserDto'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update user
+      tags:
+      - users
+  /api/user/login:
+    post:
+      consumes:
+      - application/json
+      description: login user
+      parameters:
+      - description: Login input
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/main.UserLoginRequestDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.UserLoginResponseDto'
+      summary: Login user
+      tags:
+      - users
+swagger: "2.0"
