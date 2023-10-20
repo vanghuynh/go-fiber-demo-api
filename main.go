@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"fmt"
 	"log"
 	"time"
 
@@ -21,6 +22,7 @@ import (
 	// need this lib to work with atlas command
 	_ "ariga.io/atlas-go-sdk/recordriver"
 	_ "ariga.io/atlas-provider-gorm/gormschema"
+	"github.com/robfig/cron/v3"
 )
 
 // define a public and private key
@@ -67,6 +69,10 @@ func main() {
 	// this api get data form coingecko, not from database
 	app.Get("/api/coin", routes.GetTrendingCoins)
 
+	// get list of all available coins
+	// this api get data form coingecko, not from database
+	app.Get("/api/coin/all", routes.GetCoinsList)
+
 	// JWT middleware
 	app.Use(jwtware.New(jwtware.Config{
 		SigningKey: jwtware.SigningKey{
@@ -78,7 +84,23 @@ func main() {
 	// all routes defined after JWT middleware must authenticate
 	settupRoutes(app)
 
+	// cron settup
+	cron := cron.New()
+	cron.AddFunc("@every 1m", func() {
+		fmt.Println("start cron every minute")
+		coinList, err := routes.GetCoinGekoCoinsList()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("coinList: ", coinList)
+		fmt.Println("coinList[0]: ", coinList[0])
+
+	})
+	cron.Start()
+	fmt.Println("start cron")
+
 	app.Listen(":3000")
+
 }
 
 func settupRoutes(app *fiber.App) {

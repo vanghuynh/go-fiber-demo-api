@@ -64,6 +64,19 @@ definitions:
       item:
         $ref: '#/definitions/routes.CoinDto'
     type: object
+  routes.CoinListItemDto:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      platforms:
+        additionalProperties:
+          type: string
+        type: object
+      symbol:
+        type: string
+    type: object
   routes.CreateOrderDto:
     properties:
       product_id:
@@ -147,6 +160,29 @@ paths:
         "500":
           description: Internal Server Error
       summary: List of trending coins
+      tags:
+      - coins
+  /api/coin/all:
+    get:
+      consumes:
+      - application/json
+      description: get list of all available coin
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/routes.CoinListItemDto'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: List of all available coins
       tags:
       - coins
   /api/order:

@@ -55,6 +55,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/coin/all": {
+            "get": {
+                "description": "get list of all available coin",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "coins"
+                ],
+                "summary": "List of all available coins",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/routes.CoinListItemDto"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/api/order": {
             "get": {
                 "description": "get orders",
@@ -516,6 +551,26 @@ const docTemplate = `{
             "properties": {
                 "item": {
                     "$ref": "#/definitions/routes.CoinDto"
+                }
+            }
+        },
+        "routes.CoinListItemDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "platforms": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "symbol": {
+                    "type": "string"
                 }
             }
         },
