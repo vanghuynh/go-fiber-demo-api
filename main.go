@@ -5,6 +5,8 @@ import (
 	"crypto/rsa"
 	"fmt"
 	"log"
+	"runtime"
+	"sync"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -24,6 +26,10 @@ import (
 	_ "ariga.io/atlas-provider-gorm/gormschema"
 	"github.com/robfig/cron/v3"
 )
+
+var wg sync.WaitGroup
+
+var c = make(chan int) // allocate a channel
 
 // define a public and private key
 // just for demo, in production you should use env
@@ -88,19 +94,58 @@ func main() {
 	cron := cron.New()
 	cron.AddFunc("@every 1m", func() {
 		fmt.Println("start cron every minute")
-		coinList, err := routes.GetCoinGekoCoinsList()
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("coinList: ", coinList)
-		fmt.Println("coinList[0]: ", coinList[0])
+		// coinList, err := routes.GetCoinGekoCoinsList()
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
+		// fmt.Println("coinList: ", coinList)
+		// fmt.Println("coinList[0]: ", coinList[0])
 
 	})
 	cron.Start()
 	fmt.Println("start cron")
 
+	c1 := circle{
+		radius: 10,
+	}
+	cp := c1
+	fmt.Println("area: ", cp.area())
+
+	// go routine
+	fmt.Println("OS\t", runtime.GOOS)
+	fmt.Println("ARCH\t", runtime.GOARCH)
+	fmt.Println("CPUs\t", runtime.NumCPU())
+	fmt.Println("Goroutines\t", runtime.NumGoroutine())
+	// make function as go routine
+	go taskOne()
+	<-c // wait for taskOne finish
+	taskTwo()
+
 	app.Listen(":3000")
 
+}
+
+type circle struct {
+	radius float64
+}
+
+func (c *circle) area() float64 {
+	return 3.14 * c.radius * c.radius
+}
+
+func taskOne() {
+	for i := 0; i < 10; i++ {
+		time.Sleep(5 * time.Second)
+		fmt.Println("taskOne")
+	}
+	c <- 1 // send a signal, value does not matter
+}
+
+func taskTwo() {
+	for i := 0; i < 10; i++ {
+		time.Sleep(6 * time.Second)
+		fmt.Println("taskTwo")
+	}
 }
 
 func settupRoutes(app *fiber.App) {
